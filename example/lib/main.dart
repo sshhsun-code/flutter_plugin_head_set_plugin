@@ -50,8 +50,23 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initListener() async {
+    try {
+      FlutterPluginHeadSetPlugin.setListener((payload) => {
+          print('payload = $payload'),
+          setState(() {
+            var state = payload as int;
+            print('_state = $state');
+              _state = state;
+            })
+          });
+    } on PlatformException {}
+  }
+
   @override
   Widget build(BuildContext context) {
+    initListener();
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(

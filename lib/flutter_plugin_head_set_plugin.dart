@@ -30,6 +30,7 @@ class FlutterPluginHeadSetPlugin {
   }
 
   static Future<dynamic> _handleMethod(MethodCall call) async {
+    print('_handleMethod call.method');
     switch (call.method) {
       case "connect":
         return detectPluggedCallback(HeadsetState.CONNECT);

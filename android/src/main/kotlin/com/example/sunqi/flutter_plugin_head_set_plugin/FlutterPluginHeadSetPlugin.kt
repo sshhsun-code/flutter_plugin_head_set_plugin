@@ -37,19 +37,6 @@ public class FlutterPluginHeadSetPlugin : FlutterPlugin, MethodCallHandler {
     // depending on the user's project. onAttachedToEngine or registerWith must both be defined
     // in the same class.
     companion object {
-        private lateinit var channel: MethodChannel
-
-        var headsetEventListener = object : HeadSetListener {
-
-            override fun onHeadsetConnect() {
-                channel?.invokeMethod("connect", "true")
-            }
-
-            override fun onHeadsetDisconnect() {
-                channel?.invokeMethod("disconnect", "true")
-            }
-        }
-
         @JvmStatic
         fun registerWith(registrar: Registrar) {
             val channel = MethodChannel(registrar.messenger(), "flutter_plugin_head_set_plugin")
@@ -58,6 +45,20 @@ public class FlutterPluginHeadSetPlugin : FlutterPlugin, MethodCallHandler {
             HeadSetManager.instance.currentState = HeadSetManager.getHeadStatus(registrar.activeContext())
             HeadSetManager.instance.registerHeadSetManager(registrar.activeContext())
             HeadSetManager.instance.setEventListener(headsetEventListener)
+        }
+
+        private lateinit var channel: MethodChannel
+        var headsetEventListener = object : HeadSetListener {
+
+            override fun onHeadsetConnect() {
+                println("listener : onHeadsetConnect")
+                channel?.invokeMethod("connect", "true")
+            }
+
+            override fun onHeadsetDisconnect() {
+                println("listener : onHeadsetDisconnect")
+                channel?.invokeMethod("disconnect", "true")
+            }
         }
     }
 

@@ -68,10 +68,12 @@ class HeadSetManager {
                 when (state) {
                     BluetoothProfile.STATE_CONNECTED -> {
                         currentState = STATE_CONNECT
+                        headsetEventListener?.onHeadsetConnect()
                         println("mReceiver onHeadSetStateChange 蓝牙耳机连接")
                     }
                     BluetoothProfile.STATE_DISCONNECTED -> {
                         currentState = STATE_DIS_CONNECT
+                        headsetEventListener?.onHeadsetDisconnect()
                         println("mReceiver onHeadSetStateChange 蓝牙耳机断连")
                     }
                 }
@@ -80,12 +82,14 @@ class HeadSetManager {
                 if (intent?.hasExtra("state") == true) {
                     if (intent.getIntExtra("state", 2) == 0) {
                         currentState = STATE_DIS_CONNECT
+                        headsetEventListener?.onHeadsetDisconnect()
                         if (isHeadsetOn) {
                             println("mReceiver onHeadSetStateChange 有线耳机断连")
                             isHeadsetOn = false
                         }
                     } else if (intent.getIntExtra("state", 2) == 1) {
                         currentState = STATE_CONNECT
+                        headsetEventListener?.onHeadsetConnect()
                         if (!isHeadsetOn) {
                             println("mReceiver onHeadSetStateChange 有线耳机连接")
                             isHeadsetOn = true
@@ -98,10 +102,12 @@ class HeadSetManager {
                 when (connectionState) {
                     BluetoothAdapter.STATE_CONNECTED -> {
                         currentState = STATE_CONNECT
+                        headsetEventListener?.onHeadsetConnect()
                         println("mReceiver onHeadSetStateChange 蓝牙耳机连接")
                     }
                     BluetoothAdapter.STATE_DISCONNECTED -> {
                         currentState = STATE_DIS_CONNECT
+                        headsetEventListener?.onHeadsetDisconnect()
                         println("mReceiver onHeadSetStateChange 蓝牙耳机断连")
                     }
                     else -> {
@@ -153,12 +159,13 @@ class HeadSetManager {
     }
 
     fun setEventListener(listener: HeadSetListener) {
-        headsetEventListener = listener;
+        headsetEventListener = listener
     }
-    fun unRegisterHeadSetManager(context: Context?) {
+    fun unInit(context: Context?) {
         mReceiver.let {
             context!!.unregisterReceiver(it)
         }
+        headsetEventListener = null
     }
 
 }
