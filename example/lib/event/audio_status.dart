@@ -1,0 +1,4 @@
+enum HeadsetStatus {
+  connect,
+  disconnect
+}

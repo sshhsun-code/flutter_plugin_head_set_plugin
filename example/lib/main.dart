@@ -1,8 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_plugin_head_set_plugin/flutter_plugin_head_set_plugin.dart';
+import 'package:flutter_plugin_head_set_plugin_example/event/audio_status.dart';
+
+import 'event/event_bus_utils.dart';
 
 void main() {
   runApp(MyApp());
@@ -21,6 +26,17 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
+    initListener();
+    eventBus.on<HeadsetNotification>().listen((HeadsetNotification event) => {
+      print('eventBus on HeadsetNotification = $event'),
+          setState(() {
+            if (HeadsetState.CONNECT == event.status) {
+              _state = 1;
+            } else {
+              _state = 0;
+            }
+          })
+        });
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -54,19 +70,23 @@ class _MyAppState extends State<MyApp> {
   Future<void> initListener() async {
     try {
       FlutterPluginHeadSetPlugin.setListener((payload) => {
-          print('payload = $payload'),
-          setState(() {
-            var state = payload as int;
-            print('_state = $state');
-              _state = state;
-            })
+            print('eventBus payload = $payload'),
+            if (payload as int == 1)
+              {
+                print('eventBus fire = HeadsetStatus.connect'),
+                eventBus.fire(HeadsetNotification(HeadsetStatus.connect)),
+              }
+            else
+              {
+                print('eventBus fire = HeadsetStatus.disconnect'),
+                eventBus.fire(HeadsetNotification(HeadsetStatus.disconnect)),
+              }
           });
     } on PlatformException {}
   }
 
   @override
   Widget build(BuildContext context) {
-    initListener();
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -75,8 +95,7 @@ class _MyAppState extends State<MyApp> {
         body: Column(children: <Widget>[
           Text('耳机连接: $_state\n'),
           Text('Running on: $_platformVersion\n'),
-        ]
-        ),
+        ]),
       ),
     );
   }
