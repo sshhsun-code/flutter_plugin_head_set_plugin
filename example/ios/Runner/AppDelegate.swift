@@ -26,15 +26,20 @@ import AVFoundation
       }
     }
     
-    func HeadsetIsConnect() -> Int  {
-        let currentRoute = AVAudioSession.sharedInstance().currentRoute
-        for output in currentRoute.outputs {
-            if output.portType == AVAudioSession.Port.headphones {
-                return 1
-            }else {
-                return 0
-            }
-        }
-        return 0
-    }
+    
+  
+  
+  func HeadsetIsConnect() -> Int  {
+      let currentRoute = AVAudioSession.sharedInstance().currentRoute
+      for output in currentRoute.outputs {
+          if output.portType == AVAudioSession.Port.headphones {
+              return 1
+          } else if (output.portType == AVAudioSession.Port.bluetoothA2DP) {
+              return 1
+          } else {
+              return 0
+          }
+      }
+      return 0
+  }
 }
